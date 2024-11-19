@@ -14,7 +14,7 @@ export const loader = async ({ request }) => {
     // Fetch assets from the database
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      // select: { assets: true }, // Replace `assets` with the actual field storing the user's assets
+
     });
 
     if (!user) {
