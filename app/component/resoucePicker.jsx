@@ -58,13 +58,7 @@ const ResoucePicker = ({handleUploadImage}) => {
       }
   return (
     <div>
-       <img
-                  
-                  src={formState.productImage} 
-                  alt='photo' 
-                  width={300} 
-                  height={300}
-                />
+     
          {formState.productId ? (
                   <InlineStack blockAlign="center" gap="500">
                     <Thumbnail

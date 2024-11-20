@@ -7,7 +7,7 @@ export const action = async ({ request }) => {
   const data = await request.json();
   const { imageUrl, userId,theme } = data;
 
-  if (!image || !userId) {
+  if (!imageUrl || !userId) {
     return json({ error: "Image or user ID missing." }, { status: 400 });
   }
 

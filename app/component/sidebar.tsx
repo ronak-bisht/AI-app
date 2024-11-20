@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { ImagePlus, FolderOpen, BarChart3 } from "lucide-react";
 import ResoucePicker from "./resoucePicker"
 import axios from 'axios';
+import { Console } from 'console';
 
 const ThemeCard = ({ 
   title, 
@@ -63,7 +64,7 @@ const SidebarLayout = ({
     { title: 'Cafe', bgClass: 'bg-slate-200' },
     { title: 'Kitchen', bgClass: 'bg-green-100' },
   ];
-
+  console.log(result)
   const renderContent = () => {
     switch (activeSection) {
       case 'create':
@@ -87,7 +88,7 @@ const SidebarLayout = ({
         return (
           <div className="p-6">
             <h2 className="text-2xl font-semibold mb-6">Your Assets</h2>
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               {assets && assets.length > 0 && assets.map((asset, i) => (
                 <img
                   key={i} 
@@ -95,6 +96,7 @@ const SidebarLayout = ({
                   alt='photo' 
                   width={300} 
                   height={300}
+                  draggable={false}
                 />
               ))}
             </div>
@@ -104,7 +106,7 @@ const SidebarLayout = ({
         return (
           <div className="p-6">
             <h2 className="text-2xl font-semibold mb-6">Generated Results</h2>
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               {result && result.length > 0 && result.map((resultItem, i) => (
                 <img
                   key={i} 
@@ -112,6 +114,7 @@ const SidebarLayout = ({
                   alt='photo' 
                   width={300} 
                   height={300}
+                  draggable={false}
                 />
               ))}
             </div>

@@ -10,10 +10,10 @@ interface RecentImage {
   thumbnail: string;
 }
 
-const ImageEditor = ({ theme,userId }: { theme: string,userId:any }) => {
-
+const ImageEditor = ({ theme, userId }: { theme: string, userId: any }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // For background removal
+  const [generatingBackground, setGeneratingBackground] = useState(false); // For AI background generation
   const [credits, setCredits] = useState(null);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
@@ -23,43 +23,37 @@ const ImageEditor = ({ theme,userId }: { theme: string,userId:any }) => {
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-
-  const handleProductImageUpload2 = async (productImage:string) => {
-    
-  
+  const handleProductImageUpload2 = async (productImage: string) => {
     if (productImage) {
       setLoading(true);
       try {
-        // Convert product image URL to a base64 format if needed
         const response = await fetch(productImage);
         const blob = await response.blob();
-  
         const reader = new FileReader();
-  
+
         reader.onloadend = async () => {
           try {
             const base64Image = reader.result as string;
-  
-            // Send base64 image for background removal
+            setSelectedImage(base64Image);
+
             const uploadResponse = await axios.post("/api/bgRemove", {
               image: base64Image.split(",")[1],
             });
-  
+
             setSelectedImage(uploadResponse.data.resultImage);
             setImageUrl(uploadResponse.data.imageName);
           } catch (error) {
             console.error("Error processing product image:", error);
+          } finally {
+            setLoading(false);
           }
         };
-  
+
         reader.readAsDataURL(blob);
       } catch (error) {
         console.error("Error fetching product image:", error);
-      } finally {
         setLoading(false);
       }
-    } else {
-      alert("No product image found to process");
     }
   };
 
@@ -83,13 +77,14 @@ const ImageEditor = ({ theme,userId }: { theme: string,userId:any }) => {
             setImageUrl(response.data.imageName);
           } catch (error) {
             console.error("Error removing background:", error);
+          } finally {
+            setLoading(false);
           }
         };
 
         reader.readAsDataURL(file);
       } catch (error) {
         console.error("Error processing image:", error);
-      } finally {
         setLoading(false);
       }
     } else {
@@ -129,6 +124,7 @@ const ImageEditor = ({ theme,userId }: { theme: string,userId:any }) => {
       return;
     }
 
+    setGeneratingBackground(true); // Use separate loading state for generation
     try {
       const response = await fetch('/api/createBackground', {
         method: 'POST',
@@ -148,9 +144,10 @@ const ImageEditor = ({ theme,userId }: { theme: string,userId:any }) => {
         setPebblyImage(data.imageName);
         setGeneratedImage(`data:image/png;base64,${data.data}`);
       } 
-     
     } catch (error) {
       console.error('Error calling server API:', error);
+    } finally {
+      setGeneratingBackground(false);
     }
   };
 
@@ -158,10 +155,7 @@ const ImageEditor = ({ theme,userId }: { theme: string,userId:any }) => {
     <div className="flex flex-col h-screen mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Background Remover</h1>
-        {/* <Button onClick={() => window.location.reload()}>
-          Select another product
-        </Button> */}
-         <ResoucePicker handleUploadImage={handleProductImageUpload2}/>
+        <ResoucePicker handleUploadImage={handleProductImageUpload2}/>
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 rounded-lg relative">
@@ -175,25 +169,31 @@ const ImageEditor = ({ theme,userId }: { theme: string,userId:any }) => {
           onDrop={handleDrop}
           onClick={() => !selectedImage && fileInputRef.current?.click()}
         >
-          {!selectedImage ? (
-            <div className="flex flex-col items-center justify-center p-12 cursor-pointer">
-              <ImageIcon className="w-12 h-12 text-gray-400 mb-4" />
-              <p className="text-gray-600">Click to upload or drag and drop</p>
-              <p className="text-sm text-gray-400 mt-2">PNG, JPG up to 10MB</p>
+          {loading ? (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+              <p className="mt-4 animate-bounce">Removing background...</p>
             </div>
-          ) : (
-            <div className="relative w-full h-full flex items-center justify-center">
+          ) : selectedImage ? (
+            <>
               <img
                 src={processedImage || selectedImage}
                 alt="Uploaded image"
                 className="max-h-full max-w-full object-contain transition-transform"
                 style={{ transform: `scale(${zoom})` }}
               />
-              {loading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+              {generatingBackground && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white">
                   <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+                  <p className="mt-4 animate-bounce">Generating AI background...</p>
                 </div>
               )}
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center p-12 cursor-pointer">
+              <ImageIcon className="w-12 h-12 text-gray-400 mb-4" />
+              <p className="text-gray-600">Click to upload or drag and drop</p>
+              <p className="text-sm text-gray-400 mt-2">PNG, JPG up to 10MB</p>
             </div>
           )}
         </div>
@@ -210,14 +210,12 @@ const ImageEditor = ({ theme,userId }: { theme: string,userId:any }) => {
       {selectedImage && (
         <div className="mt-6 flex items-center justify-center gap-4">
           <Button 
-          
             size="icon"
             onClick={() => setZoom(prev => Math.max(0.5, prev - 0.1))}
           >
             <ZoomOut className="w-6 h-6" />
           </Button>
           <Button 
-            
             size="icon"
             onClick={() => setZoom(prev => Math.min(2, prev + 0.1))}
           >
@@ -229,7 +227,7 @@ const ImageEditor = ({ theme,userId }: { theme: string,userId:any }) => {
       <div className="mt-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Recent</h2>
-          <Button >View all</Button>
+          <Button>View all</Button>
         </div>
         <div className="grid grid-cols-5 gap-4">
           {pebblyImage && (
@@ -242,7 +240,6 @@ const ImageEditor = ({ theme,userId }: { theme: string,userId:any }) => {
             </div>
           )}
           <Button
-         
             className="aspect-square flex flex-col items-center justify-center gap-2"
             onClick={() => fileInputRef.current?.click()}
           >
@@ -256,11 +253,10 @@ const ImageEditor = ({ theme,userId }: { theme: string,userId:any }) => {
         className="mt-6 w-full py-6 text-lg font-semibold" 
         size="lg" 
         onClick={handleCreateBackground}
-        disabled={!imageUrl || loading}
+        disabled={!imageUrl || loading || generatingBackground}
       >
-        {loading ? 'Processing...' : 'GENERATE'}
+        {generatingBackground ? 'Generating Background...' : 'GENERATE'}
       </Button>
-     
     </div>
   );
 };
