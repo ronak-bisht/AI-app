@@ -4,13 +4,24 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
+import { json } from "@remix-run/react";
 
 
 export function links() {
   return [{ rel: "stylesheet", href: "./styles/tailwind.css" }]
 }
+// export async function loader() {
+//   return json({
+//     ENV: {
+//       IMAGE_URL: process.env.IMAGE_URL,
+    
+//     },
+//   });
+// }
 export default function App() {
+  // const data = useLoaderData<typeof loader>();
   return (
     <html>
       <head>
@@ -27,6 +38,13 @@ export default function App() {
       <body>
         <Outlet />
         <ScrollRestoration />
+        {/* <script
+          dangerouslySetInnerHTML={{
+            __html: `window.ENV = ${JSON.stringify(
+              data.ENV
+            )}`,
+          }}
+        /> */}
         <Scripts />
       </body>
     </html>

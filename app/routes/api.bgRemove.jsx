@@ -13,8 +13,8 @@ export const action = async ({ request }) => {
 
   // Generate a unique image name using a random value and timestamp
   const imageName = `${Math.floor(Math.random() * 1000)}-${Date.now()}.png`;
-
-
+  console.log('remove bg key api')
+ console.log(process.env.REMOVE_BG_API_KEY)
   try {
     // Step 1: Send the image to the background removal API
     const removeBgResponse = await axios.post(
@@ -22,7 +22,7 @@ export const action = async ({ request }) => {
       { image_file_b64: image },
       {
         headers: {
-          "X-Api-Key": "m1R6NG7jPdtFJCH6pTSLfXEx",
+          "X-Api-Key": process.env.REMOVE_BG_API_KEY,
           "Content-Type": "application/json",
         },
         responseType: "arraybuffer",

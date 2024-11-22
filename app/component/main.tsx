@@ -10,7 +10,7 @@ interface RecentImage {
   thumbnail: string;
 }
 
-const ImageEditor = ({ theme, userId }: { theme: string, userId: any }) => {
+const ImageEditor = ({ theme, userId,url }: { theme: string, userId: any,url?:string }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false); // For background removal
   const [generatingBackground, setGeneratingBackground] = useState(false); // For AI background generation
@@ -23,6 +23,8 @@ const ImageEditor = ({ theme, userId }: { theme: string, userId: any }) => {
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+
+  //this is for shopify resource picker
   const handleProductImageUpload2 = async (productImage: string) => {
     if (productImage) {
       setLoading(true);
@@ -38,6 +40,7 @@ const ImageEditor = ({ theme, userId }: { theme: string, userId: any }) => {
 
             const uploadResponse = await axios.post("/api/bgRemove", {
               image: base64Image.split(",")[1],
+              userId,
             });
 
             setSelectedImage(uploadResponse.data.resultImage);
@@ -57,6 +60,8 @@ const ImageEditor = ({ theme, userId }: { theme: string, userId: any }) => {
     }
   };
 
+
+  //this is for file input
   const handleImageUpload = async (file: File) => {
     if (file && file.type.startsWith('image/')) {
       setLoading(true);
@@ -132,7 +137,7 @@ const ImageEditor = ({ theme, userId }: { theme: string, userId: any }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          imageUrl: `https://pub-0ae2a8f797e84fae8911ca82cf00112d.r2.dev/${imageUrl}`,
+          imageUrl: `${url}/${imageUrl}`,
           theme,
           userId
         }),
@@ -154,7 +159,7 @@ const ImageEditor = ({ theme, userId }: { theme: string, userId: any }) => {
   return (
     <div className="flex flex-col h-screen mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Background Remover</h1>
+        <h1 className="text-xl font-bold">Background AI Tool</h1>
         <ResoucePicker handleUploadImage={handleProductImageUpload2}/>
       </div>
 
@@ -193,7 +198,7 @@ const ImageEditor = ({ theme, userId }: { theme: string, userId: any }) => {
             <div className="flex flex-col items-center justify-center p-12 cursor-pointer">
               <ImageIcon className="w-12 h-12 text-gray-400 mb-4" />
               <p className="text-gray-600">Click to upload or drag and drop</p>
-              <p className="text-sm text-gray-400 mt-2">PNG, JPG up to 10MB</p>
+              {/* <p className="text-sm text-gray-400 mt-2">PNG, JPG up to 10MB</p> */}
             </div>
           )}
         </div>
@@ -227,24 +232,24 @@ const ImageEditor = ({ theme, userId }: { theme: string, userId: any }) => {
       <div className="mt-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Recent</h2>
-          <Button>View all</Button>
+          {/* <Button>View all</Button> */}
         </div>
         <div className="grid grid-cols-5 gap-4">
           {pebblyImage && (
             <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
               <img
-                src={`https://pub-0ae2a8f797e84fae8911ca82cf00112d.r2.dev/${pebblyImage}`}
+                src={`${url}/${pebblyImage}`}
                 alt="Generated image"
                 className="w-full h-full object-cover"
               />
             </div>
           )}
           <Button
-            className="aspect-square flex flex-col items-center justify-center gap-2"
+            className="aspect-square flex items-center justify-center gap-2"
             onClick={() => fileInputRef.current?.click()}
           >
             <Upload className="w-6 h-6" />
-            <span className="text-sm">Upload New</span>
+            <span className="text-xs">Upload New</span>
           </Button>
         </div>
       </div>

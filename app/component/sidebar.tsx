@@ -32,11 +32,13 @@ const ThemeCard = ({
 const SidebarLayout = ({ 
   onThemeChange, 
   selectedTheme,
-  userId
+  userId,
+  url
 }: { 
   onThemeChange: (theme: string) => void;
   selectedTheme: string;
   userId:any;
+  url?:string;
 }) => {
   const [activeSection, setActiveSection] = useState<'create' | 'assets' | 'results'>('create');
   const [assets, setAssets] = useState([]);
@@ -64,7 +66,7 @@ const SidebarLayout = ({
     { title: 'Cafe', bgClass: 'bg-slate-200' },
     { title: 'Kitchen', bgClass: 'bg-green-100' },
   ];
-  console.log(result)
+
   const renderContent = () => {
     switch (activeSection) {
       case 'create':
@@ -92,7 +94,7 @@ const SidebarLayout = ({
               {assets && assets.length > 0 && assets.map((asset, i) => (
                 <img
                   key={i} 
-                  src={`https://pub-0ae2a8f797e84fae8911ca82cf00112d.r2.dev/${asset}`} 
+                  src={`${url}/${asset}`} 
                   alt='photo' 
                   width={300} 
                   height={300}
@@ -110,7 +112,7 @@ const SidebarLayout = ({
               {result && result.length > 0 && result.map((resultItem, i) => (
                 <img
                   key={i} 
-                  src={`https://pub-0ae2a8f797e84fae8911ca82cf00112d.r2.dev/${resultItem}`} 
+                  src={`${url}/${resultItem}`} 
                   alt='photo' 
                   width={300} 
                   height={300}
