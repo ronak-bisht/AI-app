@@ -10,7 +10,7 @@ import { json } from "@remix-run/react";
 
 
 export function links() {
-  return [{ rel: "stylesheet", href: "./styles/tailwind.css" }]
+  return [{ rel: "stylesheet", href: "/app/styles/tailwind.css" }]
 }
 // export async function loader() {
 //   return json({

@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "30bfb4e34fc681da67699d6b0d7d9340"
-application_url = "https://moss-valley-granted-valium.trycloudflare.com"
+application_url = "https://progressive-asks-pole-briefly.trycloudflare.com"
 embedded = true
 name = "remix-new"
 handle = "remix-new"
@@ -19,9 +19,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://moss-valley-granted-valium.trycloudflare.com/auth/callback",
-  "https://moss-valley-granted-valium.trycloudflare.com/auth/shopify/callback",
-  "https://moss-valley-granted-valium.trycloudflare.com/api/auth/callback"
+  "https://progressive-asks-pole-briefly.trycloudflare.com/auth/callback",
+  "https://progressive-asks-pole-briefly.trycloudflare.com/auth/shopify/callback",
+  "https://progressive-asks-pole-briefly.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
